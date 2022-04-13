@@ -7,13 +7,13 @@
   To have them declared static, define STATIC=static on the cc
   command line.
 */
-#ifdef XAC  /* HiTech's XAC cmd line is small */
+#ifdef XAC /* HiTech's XAC cmd line is small */
 #define STATIC static
 #else /* XAC */
 #ifndef STATIC
 #define STATIC
 #endif /* STATIC */
-#endif	/* XAC */
+#endif /* XAC */
 
 /*
   By default we assume the compiler supports unsigned char and
