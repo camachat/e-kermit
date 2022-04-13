@@ -48,8 +48,8 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE.
 */
-#include "kermit.h" /* Kermit protocol definitions */
 #include "cdefs.h"  /* C language defs for all modules */
+#include "kermit.h" /* Kermit protocol definitions */
 #include "debug.h"  /* Debugging */
 
 #define zgetc() \

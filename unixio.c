@@ -80,7 +80,7 @@ void dodebug(int fc, UCHAR *label, UCHAR *sval, long nval)
     if (fc != DB_OPN && !xdebug)
         return;
     if (!label)
-        label = "";
+        label = (UCHAR*)"";
 
     switch (fc)
     {            /* Function code */
@@ -88,8 +88,8 @@ void dodebug(int fc, UCHAR *label, UCHAR *sval, long nval)
         if (dp)
             fclose(dp);
         if (!*label)
-            label = "debug.log";
-        dp = fopen(label, "w");
+            label = (UCHAR*)"debug.log";
+        dp = fopen((const char*)label, "w");
         if (!dp)
         {
             dp = stderr;
@@ -274,7 +274,7 @@ int readpkt(struct k_data *k, UCHAR *p, int len, int fc)
     flag = n = 0; /* Init local variables */
 
 #ifdef DEBUG
-    p2 = p;
+    p2 = (char*)p;
 #endif /* DEBUG */
 
     while (1)
@@ -373,7 +373,7 @@ int openfile(struct k_data *k, UCHAR *s, int mode)
     switch (mode)
     {
     case 1: /* Read */
-        if (!(ifile = fopen(s, "r")))
+        if (!(ifile = fopen((const char*)s, "r")))
         {
             debug(DB_LOG, "openfile read error", s, 0);
             return (X_ERROR);
@@ -386,7 +386,7 @@ int openfile(struct k_data *k, UCHAR *s, int mode)
         return (X_OK);
 
     case 2: /* Write (create) */
-        ofile = creat(s, 0644);
+        ofile = creat((const char*)s, 0644);
         if (ofile < 0)
         {
             debug(DB_LOG, "openfile write error", s, 0);
@@ -453,10 +453,10 @@ fileinfo(struct k_data *k,
     buf[0] = '\0';
     if (buflen < 18)
         return (X_ERROR);
-    if (stat(filename, &statbuf) < 0)
+    if (stat((const char*)filename, &statbuf) < 0)
         return (X_ERROR);
     timestamp = localtime(&(statbuf.st_mtime));
-    sprintf(buf, "%04d%02d%02d %02d:%02d:%02d",
+    sprintf((char*)buf, "%04d%02d%02d %02d:%02d:%02d",
             timestamp->tm_year + 1900,
             timestamp->tm_mon + 1,
             timestamp->tm_mday,
@@ -477,7 +477,7 @@ fileinfo(struct k_data *k,
     if (!mode)
     { /* File type determination requested */
         int isbinary = 1;
-        fp = fopen(filename, "r"); /* Open the file for scanning */
+        fp = fopen((const char*)filename, "r"); /* Open the file for scanning */
         if (fp)
         {
             int n = 0, count = 0;
@@ -648,7 +648,7 @@ int closefile(struct k_data *k, UCHAR c, int mode)
             if (k->filename)
             {
                 debug(DB_LOG, "deleting incomplete", k->filename, 0);
-                unlink(k->filename); /* Delete it. */
+                unlink((const char*)k->filename); /* Delete it. */
             }
         }
         break;

@@ -46,6 +46,7 @@
 #include "platform.h" /* Platform-specific includes and definitions */
 #include <ctype.h>
 #include <stdlib.h>
+#include <unistd.h>
 #ifdef __linux
 #include <errno.h>
 #include <stdlib.h>
@@ -205,7 +206,7 @@ int doarg(char c)
                     fatal("File '", s, "' not accessible");
                 nfils++;
             }
-            xargc++, *xargv--; /* Adjust argv/argc */
+            xargc++, xargv--; /* Adjust argv/argc */
             if (nfils < 1)
                 fatal("Missing filename for -s", (char *)0, (char *)0);
             action = A_SEND;
@@ -457,8 +458,8 @@ int main(int argc, char **argv)
               date, size, and bytes transferred so far.  These can be used in a
               file-transfer progress display, log, etc.
             */
-            debug(DB_LOG, "NAME", r.filename ? (char *)r.filename : "(NULL)", 0);
-            debug(DB_LOG, "DATE", r.filedate ? (char *)r.filedate : "(NULL)", 0);
+            debug(DB_LOG, "NAME", r.filename ? r.filename : (UCHAR *)"(NULL)", 0);
+            debug(DB_LOG, "DATE", r.filedate ? r.filedate : (UCHAR *)"(NULL)", 0);
             debug(DB_LOG, "SIZE", 0, r.filesize);
             debug(DB_LOG, "STATE", 0, r.status);
             debug(DB_LOG, "SOFAR", 0, r.sofar);
