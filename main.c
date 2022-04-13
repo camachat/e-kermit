@@ -144,9 +144,8 @@ void usage()
 }
 
 void fatal(char *msg1, char *msg2, char *msg3)
-{ /* Not to be called except */
-    if (msg1)
-    { /* from this module */
+{               /* Not to be called except */
+    if (msg1) { /* from this module */
         fprintf(stderr, "%s: %s", xname, msg1);
         if (msg2)
             fprintf(stderr, "%s", msg2);
@@ -166,14 +165,12 @@ int doarg(char c)
     struct stat statbuf;
 
     xp = *xargv + 1; /* Pointer for bundled args */
-    while (c)
-    {
+    while (c) {
 #ifdef DEBUG
         if (errorrate)
             seed += (int)c;
 #endif /* DEBUG) */
-        switch (c)
-        {
+        switch (c) {
         case 'r': /* Receive */
             if (action)
                 fatal("Conflicting actions", (char *)0, (char *)0);
@@ -185,11 +182,11 @@ int doarg(char c)
             if (action)
                 fatal("Conflicting actions", (char *)0, (char *)0);
             if (*(xp + 1))
-                fatal("Invalid argument bundling after -s", (char *)0, (char *)0);
+                fatal("Invalid argument bundling after -s", (char *)0,
+                      (char *)0);
             nfils = 0;                      /* Initialize file counter, flag */
             cmlist = (UCHAR **)(xargv + 1); /* Remember this pointer */
-            while (--xargc > 0)
-            { /* Traverse the list */
+            while (--xargc > 0) {           /* Traverse the list */
                 xargv++;
                 s = *xargv;
 #ifdef DEBUG
@@ -225,21 +222,17 @@ int doarg(char c)
             if ((xargc < 1) || (**xargv == '-'))
                 fatal("Missing option argument", (char *)0, (char *)0);
             s = *xargv;
-            while (*s)
-            {
+            while (*s) {
                 if (!isdigit(*s))
                     fatal("Numeric argument required", (char *)0, (char *)0);
                 s++;
             }
-            if (c == 'b')
-            {
+            if (c == 'b') {
                 check = atoi(*xargv);
                 if (check < 1 || check > 5 || check == 4)
                     fatal("Invalid block check", (char *)0, (char *)0);
 #ifdef DEBUG
-            }
-            else if (c == 'E')
-            {
+            } else if (c == 'E') {
                 errorrate = atoi(*xargv);
                 if (errorrate > 100)
                     fatal("Invalid error rate", (char *)0, (char *)0);
@@ -279,8 +272,7 @@ int doarg(char c)
             xargv++, xargc--;
             if ((xargc < 1) || (**xargv == '-'))
                 fatal("Missing parity", (char *)0, (char *)0);
-            switch (x = **xargv)
-            {
+            switch (x = **xargv) {
             case 'e': /* Even */
             case 'o': /* Odd */
             case 'm': /* Mark */
@@ -302,8 +294,7 @@ int doarg(char c)
 #endif /* DEBUG */
 
         default: /* Anything else */
-            fatal("Unknown command-line option ",
-                  *xargv,
+            fatal("Unknown command-line option ", *xargv,
                   " type 'ek -h' for help.");
         }
         c = *++xp; /* See if options are bundled */
@@ -325,18 +316,14 @@ int main(int argc, char **argv)
     xargv = argv;
     xname = argv[0];
 
-    while (--xargc > 0)
-    { /* Loop through command-line words */
+    while (--xargc > 0) { /* Loop through command-line words */
         xargv++;
-        if (**xargv == '-')
-        {                      /* Have dash */
+        if (**xargv == '-') {  /* Have dash */
             c = *(*xargv + 1); /* Get the option letter */
             x = doarg(c);      /* Go handle the option */
             if (x < 0)
                 doexit(FAILURE);
-        }
-        else
-        { /* No dash where expected */
+        } else { /* No dash where expected */
             fatal("Malformed command-line option: '", *xargv, "'");
         }
     }
@@ -410,36 +397,35 @@ int main(int argc, char **argv)
         status = kermit(K_SEND, &k, 0, 0, "", &r);
     /*
       Now we read a packet ourselves and call Kermit with it.  Normally, Kermit
-      would read its own packets, but in the embedded context, the device must be
-      free to do other things while waiting for a packet to arrive.  So the real
-      control program might dispatch to other types of tasks, of which Kermit is
-      only one.  But in order to read a packet into Kermit's internal buffer, we
-      have to ask for a buffer address and slot number.
+      would read its own packets, but in the embedded context, the device must
+      be free to do other things while waiting for a packet to arrive.  So the
+      real control program might dispatch to other types of tasks, of which
+      Kermit is only one.  But in order to read a packet into Kermit's internal
+      buffer, we have to ask for a buffer address and slot number.
 
       To interrupt a transfer in progress, set k.cancel to I_FILE to interrupt
       only the current file, or to I_GROUP to cancel the current file and all
       remaining files.  To cancel the whole operation in such a way that the
       both Kermits return an error status, call Kermit with K_ERROR.
     */
-    while (status != X_DONE)
-    {
+    while (status != X_DONE) {
         /*
-          Here we block waiting for a packet to come in (unless readpkt times out).
-          Another possibility would be to call inchk() to see if any bytes are waiting
-          to be read, and if not, go do something else for a while, then come back
-          here and check again.
+          Here we block waiting for a packet to come in (unless readpkt times
+          out). Another possibility would be to call inchk() to see if any bytes
+          are waiting to be read, and if not, go do something else for a while,
+          then come back here and check again.
         */
         inbuf = getrslot(&k, &r_slot);       /* Allocate a window slot */
         rx_len = k.rxd(&k, inbuf, P_PKTLEN); /* Try to read a packet */
         debug(DB_PKT, "main packet", &(k.ipktbuf[0][r_slot]), rx_len);
         /*
-          For simplicity, kermit() ACKs the packet immediately after verifying it was
-          received correctly.  If, afterwards, the control program fails to handle the
-          data correctly (e.g. can't open file, can't write data, can't close file),
-          then it tells Kermit to send an Error packet next time through the loop.
+          For simplicity, kermit() ACKs the packet immediately after verifying
+          it was received correctly.  If, afterwards, the control program fails
+          to handle the data correctly (e.g. can't open file, can't write data,
+          can't close file), then it tells Kermit to send an Error packet next
+          time through the loop.
         */
-        if (rx_len < 1)
-        {                          /* No data was read */
+        if (rx_len < 1) {          /* No data was read */
             freerslot(&k, r_slot); /* So free the window slot */
             if (rx_len < 0)        /* If there was a fatal error */
                 doexit(FAILURE);   /* give up */
@@ -449,17 +435,18 @@ int main(int argc, char **argv)
         }
         /* Handle the input */
 
-        switch (status = kermit(K_RUN, &k, r_slot, rx_len, "", &r))
-        {
+        switch (status = kermit(K_RUN, &k, r_slot, rx_len, "", &r)) {
         case X_OK:
 #ifdef DEBUG
             /*
-              This shows how, after each packet, you get the protocol state, file name,
-              date, size, and bytes transferred so far.  These can be used in a
-              file-transfer progress display, log, etc.
+              This shows how, after each packet, you get the protocol state,
+              file name, date, size, and bytes transferred so far.  These can be
+              used in a file-transfer progress display, log, etc.
             */
-            debug(DB_LOG, "NAME", r.filename ? r.filename : (UCHAR *)"(NULL)", 0);
-            debug(DB_LOG, "DATE", r.filedate ? r.filedate : (UCHAR *)"(NULL)", 0);
+            debug(DB_LOG, "NAME", r.filename ? r.filename : (UCHAR *)"(NULL)",
+                  0);
+            debug(DB_LOG, "DATE", r.filedate ? r.filedate : (UCHAR *)"(NULL)",
+                  0);
             debug(DB_LOG, "SIZE", 0, r.filesize);
             debug(DB_LOG, "STATE", 0, r.status);
             debug(DB_LOG, "SOFAR", 0, r.sofar);

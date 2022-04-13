@@ -80,22 +80,18 @@ void dodebug(int fc, UCHAR *label, UCHAR *sval, long nval)
     if (fc != DB_OPN && !xdebug)
         return;
     if (!label)
-        label = (UCHAR*)"";
+        label = (UCHAR *)"";
 
-    switch (fc)
-    {            /* Function code */
-    case DB_OPN: /* Open debug log */
+    switch (fc) { /* Function code */
+    case DB_OPN:  /* Open debug log */
         if (dp)
             fclose(dp);
         if (!*label)
-            label = (UCHAR*)"debug.log";
-        dp = fopen((const char*)label, "w");
-        if (!dp)
-        {
+            label = (UCHAR *)"debug.log";
+        dp = fopen((const char *)label, "w");
+        if (!dp) {
             dp = stderr;
-        }
-        else
-        {
+        } else {
             setbuf(dp, (char *)0);
         }
         xdebug = 1;
@@ -118,8 +114,7 @@ void dodebug(int fc, UCHAR *label, UCHAR *sval, long nval)
             fprintf(dp, "%s=%ld\n", label, nval);
         return;
     case DB_CLS: /* Close debug log */
-        if (dp)
-        {
+        if (dp) {
             fclose(dp);
             dp = (FILE *)0;
         }
@@ -266,57 +261,46 @@ int readpkt(struct k_data *k, UCHAR *p, int len, int fc)
     ccn = 0;
 #endif /* F_CTRLC */
 
-    if (ttyfd < 0 || !p)
-    { /* Device not open or no buffer */
+    if (ttyfd < 0 || !p) { /* Device not open or no buffer */
         debug(DB_MSG, "readpkt FAIL", 0, 0);
         return (-1);
     }
     flag = n = 0; /* Init local variables */
 
 #ifdef DEBUG
-    p2 = (char*)p;
+    p2 = (char *)p;
 #endif /* DEBUG */
 
-    while (1)
-    {
+    while (1) {
         x = getchar();                         /* Replace this with real i/o */
         c = (k->parity) ? x & 0x7f : x & 0xff; /* Strip parity */
 
 #ifdef F_CTRLC
         /* In remote mode only: three consecutive ^C's to quit */
-        if (k->remote && c == (UCHAR)3)
-        {
-            if (++ccn > 2)
-            {
+        if (k->remote && c == (UCHAR)3) {
+            if (++ccn > 2) {
                 debug(DB_MSG, "readpkt ^C^C^C", 0, 0);
                 return (-1);
             }
-        }
-        else
-        {
+        } else {
             ccn = 0;
         }
 #endif /* F_CTRLC */
 
         if (!flag && c != k->r_soh) /* No start of packet yet */
             continue;               /* so discard these bytes. */
-        if (c == k->r_soh)
-        {             /* Start of packet */
-            flag = 1; /* Remember */
-            continue; /* But discard. */
-        }
-        else if (c == k->r_eom  /* Packet terminator */
-                 || c == '\012' /* 1.3: For HyperTerminal */
-        )
-        {
+        if (c == k->r_soh) {        /* Start of packet */
+            flag = 1;               /* Remember */
+            continue;               /* But discard. */
+        } else if (c == k->r_eom    /* Packet terminator */
+                   || c == '\012'   /* 1.3: For HyperTerminal */
+        ) {
 #ifdef DEBUG
             *p = NUL; /* Terminate for printing */
             debug(DB_PKT, "RPKT", p2, n);
 #endif /* DEBUG */
             return (n);
-        }
-        else
-        {                          /* Contents of packet */
+        } else {                   /* Contents of packet */
             if (n++ > k->r_maxlen) /* Check length */
                 return (0);
             else
@@ -344,8 +328,7 @@ int tx_data(struct k_data *k, UCHAR *p, int n)
 
     max = 10; /* Loop breaker */
 
-    while (n > 0)
-    { /* Keep trying till done */
+    while (n > 0) { /* Keep trying till done */
         x = write(ttyfd, p, n);
         debug(DB_MSG, "tx_data write", 0, x);
         if (x < 0 || --max < 1) /* Errors are fatal */
@@ -370,11 +353,9 @@ int tx_data(struct k_data *k, UCHAR *p, int n)
 int openfile(struct k_data *k, UCHAR *s, int mode)
 {
 
-    switch (mode)
-    {
+    switch (mode) {
     case 1: /* Read */
-        if (!(ifile = fopen((const char*)s, "r")))
-        {
+        if (!(ifile = fopen((const char *)s, "r"))) {
             debug(DB_LOG, "openfile read error", s, 0);
             return (X_ERROR);
         }
@@ -386,9 +367,8 @@ int openfile(struct k_data *k, UCHAR *s, int mode)
         return (X_OK);
 
     case 2: /* Write (create) */
-        ofile = creat((const char*)s, 0644);
-        if (ofile < 0)
-        {
+        ofile = creat((const char *)s, 0644);
+        if (ofile < 0) {
             debug(DB_LOG, "openfile write error", s, 0);
             return (X_ERROR);
         }
@@ -398,8 +378,7 @@ int openfile(struct k_data *k, UCHAR *s, int mode)
 #ifdef COMMENT
     case 3: /* Append (not used) */
         ofile = open(s, O_WRONLY | O_APPEND);
-        if (ofile < 0)
-        {
+        if (ofile < 0) {
             debug(DB_LOG, "openfile append error", s, 0);
             return (X_ERROR);
         }
@@ -437,8 +416,8 @@ int openfile(struct k_data *k, UCHAR *s, int mode)
 #endif /* F_SCAN */
 
 ULONG
-fileinfo(struct k_data *k,
-         UCHAR *filename, UCHAR *buf, int buflen, short *type, short mode)
+fileinfo(struct k_data *k, UCHAR *filename, UCHAR *buf, int buflen, short *type,
+         short mode)
 {
     struct stat statbuf;
     struct tm *timestamp, *localtime();
@@ -453,15 +432,12 @@ fileinfo(struct k_data *k,
     buf[0] = '\0';
     if (buflen < 18)
         return (X_ERROR);
-    if (stat((const char*)filename, &statbuf) < 0)
+    if (stat((const char *)filename, &statbuf) < 0)
         return (X_ERROR);
     timestamp = localtime(&(statbuf.st_mtime));
-    sprintf((char*)buf, "%04d%02d%02d %02d:%02d:%02d",
-            timestamp->tm_year + 1900,
-            timestamp->tm_mon + 1,
-            timestamp->tm_mday,
-            timestamp->tm_hour,
-            timestamp->tm_min,
+    sprintf((char *)buf, "%04d%02d%02d %02d:%02d:%02d",
+            timestamp->tm_year + 1900, timestamp->tm_mon + 1,
+            timestamp->tm_mday, timestamp->tm_hour, timestamp->tm_min,
             timestamp->tm_sec);
 #ifdef F_SCAN
     /*
@@ -474,35 +450,30 @@ fileinfo(struct k_data *k,
       etc etc.  Or the implementation could skip this entirely by not defining
       F_SCAN and/or by always calling this routine with type set to -1.
     */
-    if (!mode)
-    { /* File type determination requested */
+    if (!mode) { /* File type determination requested */
         int isbinary = 1;
-        fp = fopen((const char*)filename, "r"); /* Open the file for scanning */
-        if (fp)
-        {
+        fp =
+            fopen((const char *)filename, "r"); /* Open the file for scanning */
+        if (fp) {
             int n = 0, count = 0;
             char c, *p;
 
             debug(DB_LOG, "fileinfo scan ", filename, 0);
 
             isbinary = 0;
-            while (count < SCANSIZ && !isbinary)
-            { /* Scan this much */
+            while (count < SCANSIZ && !isbinary) { /* Scan this much */
                 n = fread(inbuf, 1, SCANBUF, fp);
                 if (n == EOF || n == 0)
                     break;
                 count += n;
                 p = inbuf;
-                while (n--)
-                {
+                while (n--) {
                     c = *p++;
-                    if (c < 32 || c == 127)
-                    {
+                    if (c < 32 || c == 127) {
                         if (c != 9 &&  /* Tab */
                             c != 10 && /* LF */
                             c != 12 && /* FF */
-                            c != 13)
-                        { /* CR */
+                            c != 13) { /* CR */
                             isbinary = 1;
                             debug(DB_MSG, "fileinfo BINARY", 0, 0);
                             break;
@@ -523,26 +494,20 @@ fileinfo(struct k_data *k,
 
 int readfile(struct k_data *k)
 {
-    if (!k->zinptr)
-    {
+    if (!k->zinptr) {
 #ifdef DEBUG
         fprintf(dp, "readfile ZINPTR NOT SET\n");
 #endif /* DEBUG */
         return (X_ERROR);
     }
-    if (k->zincnt < 1)
-    { /* Nothing in buffer - must refill */
-        if (k->binary)
-        { /* Binary - just read raw buffers */
+    if (k->zincnt < 1) { /* Nothing in buffer - must refill */
+        if (k->binary) { /* Binary - just read raw buffers */
             k->dummy = 0;
             k->zincnt = fread(k->zinbuf, 1, k->zinlen, ifile);
             debug(DB_LOG, "readfile binary ok zincnt", 0, k->zincnt);
-        }
-        else
-        {          /* Text mode needs LF/CRLF handling */
+        } else {   /* Text mode needs LF/CRLF handling */
             int c; /* Current character */
-            for (k->zincnt = 0; (k->zincnt < (k->zinlen - 2)); (k->zincnt)++)
-            {
+            for (k->zincnt = 0; (k->zincnt < (k->zinlen - 2)); (k->zincnt)++) {
                 if ((c = getc(ifile)) == EOF)
                     break;
                 if (c == '\n')                       /* Have newline? */
@@ -583,19 +548,15 @@ int writefile(struct k_data *k, UCHAR *s, int n)
 
     debug(DB_LOG, "writefile binary", 0, k->binary);
 
-    if (k->binary)
-    { /* Binary mode, just write it */
+    if (k->binary) { /* Binary mode, just write it */
         if (write(ofile, s, n) != n)
             rc = X_ERROR;
-    }
-    else
-    { /* Text mode, skip CRs */
+    } else { /* Text mode, skip CRs */
         UCHAR *p, *q;
         int i;
         q = s;
 
-        while (1)
-        {
+        while (1) {
             for (p = q, i = 0; ((*p) && (*p != (UCHAR)13)); p++, i++)
                 ;
             if (i > 0)
@@ -623,8 +584,7 @@ int closefile(struct k_data *k, UCHAR c, int mode)
 {
     int rc = X_OK; /* Return code */
 
-    switch (mode)
-    {
+    switch (mode) {
     case 1:         /* Closing input file */
         if (!ifile) /* If not not open */
             break;  /* do nothing but succeed */
@@ -638,17 +598,13 @@ int closefile(struct k_data *k, UCHAR c, int mode)
             break;     /* do nothing but succeed */
         debug(DB_LOG, "closefile (output) name", k->filename, 0);
         debug(DB_LOG, "closefile (output) keep", 0, k->ikeep);
-        if (close(ofile) < 0)
-        { /* Try to close */
+        if (close(ofile) < 0) { /* Try to close */
             rc = X_ERROR;
-        }
-        else if ((k->ikeep == 0) && /* Don't keep incomplete files */
-                 (c == 'D'))
-        { /* This file was incomplete */
-            if (k->filename)
-            {
+        } else if ((k->ikeep == 0) && /* Don't keep incomplete files */
+                   (c == 'D')) {      /* This file was incomplete */
+            if (k->filename) {
                 debug(DB_LOG, "deleting incomplete", k->filename, 0);
-                unlink((const char*)k->filename); /* Delete it. */
+                unlink((const char *)k->filename); /* Delete it. */
             }
         }
         break;

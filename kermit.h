@@ -42,6 +42,7 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE.
 */
+#include "cdefs.h"  /* C language defs for all modules */
 
 #ifdef COMMENT /* COMMENT must not be defined */
 #undef COMMENT /* (e.g. in a platform header file) */
@@ -115,14 +116,14 @@
 */
 
 #ifdef COMMENT /* None of the following ... */
-               /*
-                 + = It works if selected
-                 - = Partially implemented but doesn't work
-                 0 = Not implemented
-               */
-#define F_TSW  /* - True sliding windows */
-#define F_LS   /* 0 Locking shifts */
-#define F_RS   /* 0 Recovery */
+/*
+  + = It works if selected
+  - = Partially implemented but doesn't work
+  0 = Not implemented
+*/
+#define F_TSW /* - True sliding windows */
+#define F_LS  /* 0 Locking shifts */
+#define F_RS  /* 0 Recovery */
 
 #endif /* COMMENT */
 
@@ -298,8 +299,7 @@
 #define I_FILE 1  /* Cancel file */
 #define I_GROUP 2 /* Cancel group */
 
-struct packet
-{
+struct packet {
     int len;    /* Length */
     short seq;  /* Sequence number */
     char typ;   /* Type */
@@ -308,8 +308,7 @@ struct packet
     short flg;  /* Flags */
 };
 
-struct k_data
-{                         /* The Kermit data structure */
+struct k_data {           /* The Kermit data structure */
     UCHAR *version;       /* Version number of Kermit module */
     short remote;         /* 0 = local, 1 = remote */
     short xfermode;       /* 0 = automatic, 1 = manual */
@@ -369,19 +368,19 @@ struct k_data
 #endif                     /* F_TSW */
     UCHAR ack_s[IDATALEN]; /* Our own init parameter string */
     UCHAR *obuf;
-    int rx_avail;                                /* Comms bytes available for reading */
-    int obuflen;                                 /* Length of output file buffer */
-    int obufpos;                                 /* Output file buffer position */
-    UCHAR **filelist;                            /* List of files to send */
-    UCHAR *dir;                                  /* Directory */
-    UCHAR *filename;                             /* Name of current file */
-    UCHAR *istring;                              /* Pointer to string to encode from */
-    UCHAR *ostring;                              /* Pointer to string to decode to */
+    int rx_avail;     /* Comms bytes available for reading */
+    int obuflen;      /* Length of output file buffer */
+    int obufpos;      /* Output file buffer position */
+    UCHAR **filelist; /* List of files to send */
+    UCHAR *dir;       /* Directory */
+    UCHAR *filename;  /* Name of current file */
+    UCHAR *istring;   /* Pointer to string to encode from */
+    UCHAR *ostring;   /* Pointer to string to decode to */
     int (*rxd)(struct k_data *, UCHAR *, int);   /* Comms read function */
     int (*txd)(struct k_data *, UCHAR *, int);   /* and comms write function */
     int (*ixd)(struct k_data *);                 /* and comms info function */
     int (*openf)(struct k_data *, UCHAR *, int); /* open-file function  */
-    ULONG (*finfo)
+    ULONG(*finfo)
     (struct k_data *, UCHAR *, UCHAR *, int, short *, short);
     int (*readf)(struct k_data *);                /* read-file function  */
     int (*writef)(struct k_data *, UCHAR *, int); /* write-file function */
@@ -389,14 +388,13 @@ struct k_data
     void (*dbf)(int, UCHAR *, UCHAR *, long);     /* debug function */
     UCHAR *zinbuf;                                /* Input file buffer itself */
     int zincnt;                                   /* Input buffer position */
-    int zinlen;                                   /* Length of input file buffer */
-    UCHAR *zinptr;                                /* Pointer to input file buffer */
-    int bctf;                                     /* Flag to force type 3 block check */
+    int zinlen;    /* Length of input file buffer */
+    UCHAR *zinptr; /* Pointer to input file buffer */
+    int bctf;      /* Flag to force type 3 block check */
     int dummy;
 };
 
-struct k_response
-{                             /* Report from Kermit */
+struct k_response {           /* Report from Kermit */
     short status;             /* Current status */
     UCHAR filename[FN_MAX];   /* Name of current file */
     UCHAR filedate[DATE_MAX]; /* Date of file */

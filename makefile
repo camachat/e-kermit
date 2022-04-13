@@ -48,7 +48,7 @@ gprof:
 	make ek "CFLAGS=-DSTATIC=static -DNODEBUG -pg" "LNKFLAGS=-pg"
 
 clean:
-	rm -f $(OBJS) core
+	rm -f $(OBJS) ek
 
 makewhat:
 	@echo 'Defaulting to cc...'

@@ -26,8 +26,8 @@ void dodebug(int, UCHAR *, UCHAR *, long); /* Prototype */
 */
 #ifdef KERMIT_C
 /* In kermit.c we debug only through a function pointer */
-#define debug(a, b, c, d) \
-    if (*(k->dbf))        \
+#define debug(a, b, c, d)                                                      \
+    if (*(k->dbf))                                                             \
     (*(k->dbf))(a, (UCHAR *)b, (UCHAR *)c, (long)(d))
 
 #else /* KERMIT_C */
