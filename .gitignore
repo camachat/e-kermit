@@ -50,3 +50,13 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Desktop OSes
+.DS_Store
+Thumbs.db
+
+# IDEs
+.idea/
+.vs/
+.vscode/
+*.code-workspace
